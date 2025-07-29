@@ -23,7 +23,9 @@ module.exports = {
   },
   devServer: {
     historyApiFallback: true,
-    static: './',
+    static: {
+      directory: __dirname,
+    },
     proxy: {
       '/api': 'http://localhost:5000',
     },

@@ -5,7 +5,7 @@ module.exports = {
   output: {
     path: path.resolve(__dirname, 'dist'),
     filename: 'bundle.js',
-    publicPath: '/',
+    publicPath: '/dist/',
   },
   module: {
     rules: [
@@ -23,7 +23,9 @@ module.exports = {
   },
   devServer: {
     historyApiFallback: true,
-    static: './',
+    static: {
+      directory: __dirname,
+    },
     proxy: {
       '/api': 'http://localhost:5000',
     },

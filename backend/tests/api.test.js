@@ -1,0 +1,79 @@
+process.env.JWT_SECRET = 'testsecret';
+const request = require('supertest');
+const app = require('../server');
+const { sequelize } = require('../config/database');
+
+beforeAll(async () => {
+  await sequelize.sync({ force: true });
+});
+
+afterAll(async () => {
+  await sequelize.close();
+});
+
+describe('Auth endpoints', () => {
+  test('signup and login return tokens', async () => {
+    const signup = await request(app)
+      .post('/api/auth/signup')
+      .send({ username: 'testuser', password: 'password' });
+    expect(signup.status).toBe(200);
+    expect(signup.body.token).toBeDefined();
+
+    const login = await request(app)
+      .post('/api/auth/login')
+      .send({ username: 'testuser', password: 'password' });
+    expect(login.status).toBe(200);
+    expect(login.body.token).toBeDefined();
+  });
+});
+
+describe('Fiction, chapters and comments', () => {
+  let token;
+  let fictionId;
+  let chapterId;
+
+  beforeAll(async () => {
+    const res = await request(app)
+      .post('/api/auth/signup')
+      .send({ username: 'author1', password: 'pass' });
+    token = res.body.token;
+  });
+
+  test('create fiction', async () => {
+    const res = await request(app)
+      .post('/api/fictions')
+      .set('Authorization', `Bearer ${token}`)
+      .field('title', 'Fic')
+      .field('description', 'Desc')
+      .field('genre', 'Fantasy');
+    expect(res.status).toBe(200);
+    expect(res.body.title).toBe('Fic');
+    fictionId = res.body.id;
+  });
+
+  test('create chapter and list', async () => {
+    const create = await request(app)
+      .post(`/api/chapters/${fictionId}`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({ title: 'Ch1', content: 'Hello' });
+    expect(create.status).toBe(200);
+    chapterId = create.body.id;
+
+    const list = await request(app).get(`/api/chapters/${fictionId}`);
+    expect(list.status).toBe(200);
+    expect(Array.isArray(list.body)).toBe(true);
+    expect(list.body.length).toBe(1);
+  });
+
+  test('post comment', async () => {
+    const post = await request(app)
+      .post(`/api/comments/${chapterId}`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({ content: 'Nice work' });
+    expect(post.status).toBe(200);
+
+    const list = await request(app).get(`/api/comments/${chapterId}`);
+    expect(list.body.length).toBe(1);
+    expect(list.body[0].content).toBe('Nice work');
+  });
+});

@@ -1,11 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { useParams } from 'react-router-dom';
+import { AuthContext } from '../AuthContext';
 
 export default function ChapterView() {
   const { id, chapterId } = useParams();
   const [chapter, setChapter] = useState(null);
   const [comments, setComments] = useState([]);
   const [text, setText] = useState('');
+  const { token } = useContext(AuthContext);
 
   useEffect(() => {
     fetch(`/api/chapters/${id}/${chapterId}`)
@@ -18,7 +20,6 @@ export default function ChapterView() {
 
   const handleComment = async e => {
     e.preventDefault();
-    const token = localStorage.getItem('token');
     await fetch(`/api/comments/${chapterId}`, {
       method: 'POST',
       headers: {
@@ -44,10 +45,12 @@ export default function ChapterView() {
           <li key={c.id}>{c.content}</li>
         ))}
       </ul>
-      <form onSubmit={handleComment} className="comment-form">
-        <input value={text} onChange={e => setText(e.target.value)} />
-        <button type="submit">Comment</button>
-      </form>
+      {token && (
+        <form onSubmit={handleComment} className="comment-form">
+          <input value={text} onChange={e => setText(e.target.value)} />
+          <button type="submit">Comment</button>
+        </form>
+      )}
     </div>
   );
 }

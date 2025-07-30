@@ -1,6 +1,7 @@
 import React from 'react';
 import { render, fireEvent, screen, waitFor } from '@testing-library/react';
 import ChapterView from '../components/ChapterView';
+import { AuthContext } from '../AuthContext';
 
 jest.mock('react-router-dom', () => ({
   useParams: () => ({ id: '1', chapterId: '1' })
@@ -18,7 +19,10 @@ beforeEach(() => {
 });
 
 test('loads chapter and posts comment', async () => {
-  render(<ChapterView />);
+  const wrapper = ({ children }) => (
+    <AuthContext.Provider value={{ token: 't' }}>{children}</AuthContext.Provider>
+  );
+  render(<ChapterView />, { wrapper });
 
   await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(2));
 

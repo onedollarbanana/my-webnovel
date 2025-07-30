@@ -1,7 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { AuthContext } from '../AuthContext';
 
 export default function LoginPage() {
-  const [form, setForm] = useState({ username: '', password: '', role: 'reader' });
+  const [form, setForm] = useState({ username: '', password: '' });
+  const { login } = useContext(AuthContext);
+  const navigate = useNavigate();
 
   const handleSubmit = async e => {
     e.preventDefault();
@@ -12,8 +16,8 @@ export default function LoginPage() {
     });
     const data = await res.json();
     if (data.token) {
-      localStorage.setItem('token', data.token);
-      alert('Logged in!');
+      login(data.token);
+      navigate('/');
     }
   };
 
@@ -22,10 +26,6 @@ export default function LoginPage() {
       <h2>Login</h2>
       <input placeholder="Username" value={form.username} onChange={e => setForm({ ...form, username: e.target.value })} />
       <input type="password" placeholder="Password" value={form.password} onChange={e => setForm({ ...form, password: e.target.value })} />
-      <select value={form.role} onChange={e => setForm({ ...form, role: e.target.value })}>
-        <option value="reader">Reader</option>
-        <option value="author">Author</option>
-      </select>
       <button type="submit">Login</button>
     </form>
   );

@@ -2,6 +2,7 @@ import React, { useEffect, useState, useContext } from 'react';
 import { useParams, Routes, Route, Link } from 'react-router-dom';
 import { AuthContext } from '../AuthContext';
 import ChapterView from './ChapterView';
+import MarkdownEditor from './MarkdownEditor';
 
 export default function FictionPage() {
   const { id } = useParams();
@@ -135,11 +136,11 @@ export default function FictionPage() {
             value={form.title}
             onChange={e => setForm({ ...form, title: e.target.value })}
           />
-          <textarea
-            placeholder="Content"
+          <MarkdownEditor
             value={form.content}
-            onChange={e => setForm({ ...form, content: e.target.value })}
+            onChange={value => setForm({ ...form, content: value })}
           />
+          <small>Markdown formatting is supported. Use &gt; for stat block quotes.</small>
           <button type="submit">Update</button>
           {editing && (
             <button

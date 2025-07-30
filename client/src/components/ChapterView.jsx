@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react';
+import MarkdownIt from 'markdown-it';
 import { useParams, Link } from 'react-router-dom';
 import { AuthContext } from '../AuthContext';
 
@@ -9,6 +10,7 @@ export default function ChapterView() {
   const [chapters, setChapters] = useState([]);
   const [text, setText] = useState('');
   const { token } = useContext(AuthContext);
+  const md = new MarkdownIt();
 
   useEffect(() => {
     fetch(`/api/chapters/${id}/${chapterId}`)
@@ -77,7 +79,10 @@ export default function ChapterView() {
         <div>Last Edited: {new Date(chapter.updatedAt).toLocaleDateString()}</div>
       </div>
 
-      <p>{chapter.content}</p>
+      <div
+        className="markdown-content"
+        dangerouslySetInnerHTML={{ __html: md.render(chapter.content || '') }}
+      />
 
       <div className="chapter-nav">
         <NavLink

@@ -7,6 +7,7 @@ export default function BrowsePage() {
   const [genre, setGenre] = useState('');
   const [sort, setSort] = useState('latest');
   const [genres, setGenres] = useState([]);
+  const [ratings, setRatings] = useState({});
 
   const fetchFictions = () => {
     const params = new URLSearchParams();
@@ -18,6 +19,13 @@ export default function BrowsePage() {
       .then(data => {
         setFictions(data);
         setGenres([...new Set(data.map(f => f.genre).filter(Boolean))]);
+        data.forEach(f => {
+          fetch(`/api/ratings/${f.id}`)
+            .then(res => res.json())
+            .then(r =>
+              setRatings(prev => ({ ...prev, [f.id]: r.average }))
+            );
+        });
       });
   };
 
@@ -53,12 +61,13 @@ export default function BrowsePage() {
             {f.coverImage && (
               <img src={f.coverImage} alt={f.title} width="100" />
             )}
-            <h3>
-              <Link to={`/fiction/${f.id}`}>{f.title}</Link>
-            </h3>
-            <p>{f.genre}</p>
-          </div>
-        ))}
+          <h3>
+            <Link to={`/fiction/${f.id}`}>{f.title}</Link>
+          </h3>
+          <p>{f.genre}</p>
+          <p>Rating: {ratings[f.id] ? ratings[f.id].toFixed(1) : 'N/A'}</p>
+        </div>
+      ))}
       </div>
     </div>
   );

@@ -105,3 +105,40 @@ describe('Fiction, chapters and comments', () => {
     expect(list.body[0].content).toBe('Nice work');
   });
 });
+
+describe('Ratings', () => {
+  let authorToken;
+  let userToken;
+  let fictionId;
+
+  beforeAll(async () => {
+    const author = await request(app)
+      .post('/api/auth/signup')
+      .send({ username: 'rateauthor', password: 'pass', role: 'author' });
+    authorToken = author.body.token;
+    const fiction = await request(app)
+      .post('/api/fictions')
+      .set('Authorization', `Bearer ${authorToken}`)
+      .field('title', 'Rate Me')
+      .field('description', 'd')
+      .field('genre', 'g');
+    fictionId = fiction.body.id;
+
+    const user = await request(app)
+      .post('/api/auth/signup')
+      .send({ username: 'rater', password: 'pass' });
+    userToken = user.body.token;
+  });
+
+  test('submit and get rating average', async () => {
+    const res = await request(app)
+      .post(`/api/ratings/${fictionId}`)
+      .set('Authorization', `Bearer ${userToken}`)
+      .send({ value: 5 });
+    expect(res.status).toBe(200);
+
+    const avg = await request(app).get(`/api/ratings/${fictionId}`);
+    expect(avg.status).toBe(200);
+    expect(avg.body.average).toBeCloseTo(5);
+  });
+});

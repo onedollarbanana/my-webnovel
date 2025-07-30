@@ -28,6 +28,10 @@ It uses **React** for the frontend and **Node/Express** with **PostgreSQL** for 
 
 The React dev server proxies API requests to the Express backend.
 
+### Logo
+
+Place a logo image at `client/logo.png` to appear in the header.
+
 ### Browse Page
 
 The homepage lists available fictions and includes a search bar, genre filter,

@@ -47,7 +47,7 @@ export default function AuthorDashboard() {
 
   return (
     <div>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} className="dashboard-form">
         <h2>Create Fiction</h2>
         <input
           placeholder="Title"

@@ -18,7 +18,7 @@ export default function SignupPage() {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} className="auth-form">
       <h2>Signup</h2>
       <input placeholder="Username" value={form.username} onChange={e => setForm({ ...form, username: e.target.value })} />
       <input type="password" placeholder="Password" value={form.password} onChange={e => setForm({ ...form, password: e.target.value })} />

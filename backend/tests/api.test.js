@@ -25,6 +25,14 @@ describe('Auth endpoints', () => {
     expect(login.status).toBe(200);
     expect(login.body.token).toBeDefined();
   });
+
+  test('signup as reader stores role', async () => {
+    const res = await request(app)
+      .post('/api/auth/signup')
+      .send({ username: 'reader1', password: 'pass' });
+    expect(res.status).toBe(200);
+    expect(res.body.role).toBe('reader');
+  });
 });
 
 describe('Fiction, chapters and comments', () => {
@@ -35,7 +43,7 @@ describe('Fiction, chapters and comments', () => {
   beforeAll(async () => {
     const res = await request(app)
       .post('/api/auth/signup')
-      .send({ username: 'author1', password: 'pass' });
+      .send({ username: 'author1', password: 'pass', role: 'author' });
     token = res.body.token;
   });
 

@@ -4,13 +4,14 @@ const User = require('../models/user');
 
 exports.signup = async (req, res) => {
   try {
-    const { username, password } = req.body;
+    const { username, password, role } = req.body;
     const passwordHash = await bcrypt.hash(password, 10);
-    // Always create authors. Role cannot be supplied by clients
+    // Default to reader role unless explicitly requesting author
+    const userRole = ['author', 'reader'].includes(role) ? role : 'reader';
     const user = await User.create({
       username,
       passwordHash,
-      role: 'author',
+      role: userRole,
     });
     const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET);
     res.json({ token, id: user.id, username: user.username, role: user.role });

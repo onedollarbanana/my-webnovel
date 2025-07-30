@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
 export default function SignupPage() {
-  const [form, setForm] = useState({ username: '', password: '' });
+  const [form, setForm] = useState({ username: '', password: '', role: 'reader' });
 
   const handleSubmit = async e => {
     e.preventDefault();
@@ -22,6 +22,10 @@ export default function SignupPage() {
       <h2>Signup</h2>
       <input placeholder="Username" value={form.username} onChange={e => setForm({ ...form, username: e.target.value })} />
       <input type="password" placeholder="Password" value={form.password} onChange={e => setForm({ ...form, password: e.target.value })} />
+      <select value={form.role} onChange={e => setForm({ ...form, role: e.target.value })}>
+        <option value="reader">Reader</option>
+        <option value="author">Author</option>
+      </select>
       <button type="submit">Signup</button>
     </form>
   );

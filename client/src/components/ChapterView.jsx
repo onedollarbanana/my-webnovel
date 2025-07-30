@@ -2,6 +2,8 @@ import React, { useEffect, useState, useContext } from 'react';
 import MarkdownIt from 'markdown-it';
 import { useParams, Link } from 'react-router-dom';
 import { AuthContext } from '../AuthContext';
+import ProgressBar from './ui/ProgressBar';
+import Button from './ui/Button';
 
 export default function ChapterView() {
   const { id, chapterId } = useParams();
@@ -9,8 +11,21 @@ export default function ChapterView() {
   const [comments, setComments] = useState([]);
   const [chapters, setChapters] = useState([]);
   const [text, setText] = useState('');
+  const [progress, setProgress] = useState(0);
   const { token } = useContext(AuthContext);
   const md = new MarkdownIt();
+
+  useEffect(() => {
+    function onScroll() {
+      const height = document.documentElement.scrollHeight - window.innerHeight;
+      const scrolled = window.scrollY;
+      const percent = height > 0 ? (scrolled / height) * 100 : 0;
+      setProgress(percent);
+    }
+    onScroll();
+    window.addEventListener('scroll', onScroll);
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
   useEffect(() => {
     fetch(`/api/chapters/${id}/${chapterId}`)
@@ -57,6 +72,7 @@ export default function ChapterView() {
 
   return (
     <div>
+      <ProgressBar value={progress} />
       <div className="chapter-nav">
         <NavLink
           to={`/fiction/${id}/chapter/${prevChapter ? prevChapter.id : ''}`}
@@ -108,7 +124,7 @@ export default function ChapterView() {
       {token && (
         <form onSubmit={handleComment} className="comment-form">
           <input value={text} onChange={e => setText(e.target.value)} />
-          <button type="submit">Comment</button>
+          <Button type="submit">Comment</Button>
         </form>
       )}
     </div>

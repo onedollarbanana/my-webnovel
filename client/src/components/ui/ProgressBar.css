@@ -1,0 +1,19 @@
+.progress-bar {
+  position: sticky;
+  top: 0;
+  height: 4px;
+  background: transparent;
+  z-index: 10;
+}
+
+.progress-bar__track {
+  width: 100%;
+  height: 4px;
+  background: var(--color-border);
+}
+
+.progress-bar__indicator {
+  height: 4px;
+  background: var(--color-primary);
+  transition: width var(--transition-fast) linear;
+}

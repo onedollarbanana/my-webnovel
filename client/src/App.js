@@ -23,36 +23,45 @@ function AppContent() {
 
   return (
     <>
+      <a href="#main-content" className="skip-link">Skip to content</a>
       <header>
         <Link to="/" style={{ display: 'flex', alignItems: 'center' }}>
           <img src="/logo.png" alt="My-Webnovel logo" />
           <h1>My-Webnovel</h1>
         </Link>
-        <nav>
-          <Link to="/browse">Browse</Link>
-          {!user && (
-            <>
-              <Link to="/signup">Signup</Link>
-              <Link to="/login">Login</Link>
-            </>
-          )}
-          {user && (
-            <>
-              <Link to="/profile">Profile</Link>
-              <button
-                onClick={() => {
-                  logout();
-                  navigate('/');
-                }}
-              >
-                Sign Out
-              </button>
-            </>
-          )}
-          {user && <Link to="/dashboard">Dashboard</Link>}
+        <nav aria-label="Primary">
+          <ul>
+            <li><Link to="/browse">Browse</Link></li>
+            {!user && (
+              <>
+                <li><Link to="/signup">Signup</Link></li>
+                <li><Link to="/login">Login</Link></li>
+              </>
+            )}
+            {user && (
+              <>
+                <li><Link to="/profile">Profile</Link></li>
+                <li>
+                  <button
+                    onClick={() => {
+                      logout();
+                      navigate('/');
+                    }}
+                  >
+                    Sign Out
+                  </button>
+                </li>
+              </>
+            )}
+            {user && (
+              <li>
+                <Link to="/dashboard">Dashboard</Link>
+              </li>
+            )}
+          </ul>
         </nav>
       </header>
-      <main>
+      <main id="main-content">
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/browse" element={<BrowsePage />} />

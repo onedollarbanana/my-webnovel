@@ -1,6 +1,7 @@
 import React, { useState, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../AuthContext';
+import MarkdownEditor from './MarkdownEditor';
 
 export default function AddChapterPage() {
   const { id } = useParams();
@@ -29,11 +30,11 @@ export default function AddChapterPage() {
         value={form.title}
         onChange={e => setForm({ ...form, title: e.target.value })}
       />
-      <textarea
-        placeholder="Content"
+      <MarkdownEditor
         value={form.content}
-        onChange={e => setForm({ ...form, content: e.target.value })}
+        onChange={value => setForm({ ...form, content: value })}
       />
+      <small>Markdown formatting is supported. Use &gt; for stat block quotes.</small>
       <button type="submit">Create</button>
     </form>
   );

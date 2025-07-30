@@ -44,7 +44,7 @@ export default function ChapterView() {
           <li key={c.id}>{c.content}</li>
         ))}
       </ul>
-      <form onSubmit={handleComment}>
+      <form onSubmit={handleComment} className="comment-form">
         <input value={text} onChange={e => setText(e.target.value)} />
         <button type="submit">Comment</button>
       </form>

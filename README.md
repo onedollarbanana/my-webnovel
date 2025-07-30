@@ -28,6 +28,10 @@ It uses **React** for the frontend and **Node/Express** with **PostgreSQL** for 
 
 The React dev server proxies API requests to the Express backend.
 
+### Logo
+
+Place a logo image at `client/logo.png` to appear in the header.
+
 ### Browse Page
 
 The homepage lists available fictions and includes a search bar, genre filter,
@@ -43,3 +47,27 @@ which can be stored in `localStorage` for authenticated requests.
 ### Chapters and Comments
 
 Authors can create chapters from a fiction page once logged in. Each chapter page shows the chapter text and a comment thread. Comments are posted to `/api/comments/:chapterId` and fetched from the same endpoint.
+
+### Sample Data
+
+You can populate a local PostgreSQL database with demo content using the seed
+script:
+
+```bash
+# create a database if needed
+createdb webnovel
+
+# configure environment variables
+cp backend/.env.example backend/.env
+```
+
+Edit `backend/.env` so `DATABASE_URL` points to your Postgres instance and set
+`JWT_SECRET` to any value. Then run:
+
+```bash
+cd backend
+npm run seed
+```
+
+This will recreate the tables and insert a few authors, fictions, chapters and
+comments for testing.

@@ -8,17 +8,27 @@ import AuthorDashboard from './components/AuthorDashboard';
 
 const App = () => (
   <Router>
-    <nav>
-      <Link to="/">Browse</Link> | <Link to="/signup">Signup</Link> |{' '}
-      <Link to="/login">Login</Link> | <Link to="/dashboard">Dashboard</Link>
-    </nav>
-    <Routes>
-      <Route path="/" element={<BrowsePage />} />
-      <Route path="/signup" element={<SignupPage />} />
-      <Route path="/login" element={<LoginPage />} />
-      <Route path="/fiction/:id/*" element={<FictionPage />} />
-      <Route path="/dashboard" element={<AuthorDashboard />} />
-    </Routes>
+    <header>
+      <div style={{ display: 'flex', alignItems: 'center' }}>
+        <img src="/logo.png" alt="My-Webnovel logo" />
+        <h1>My-Webnovel</h1>
+      </div>
+      <nav>
+        <Link to="/">Browse</Link>
+        <Link to="/signup">Signup</Link>
+        <Link to="/login">Login</Link>
+        <Link to="/dashboard">Dashboard</Link>
+      </nav>
+    </header>
+    <main>
+      <Routes>
+        <Route path="/" element={<BrowsePage />} />
+        <Route path="/signup" element={<SignupPage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/fiction/:id/*" element={<FictionPage />} />
+        <Route path="/dashboard" element={<AuthorDashboard />} />
+      </Routes>
+    </main>
   </Router>
 );
 

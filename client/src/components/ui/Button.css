@@ -1,0 +1,28 @@
+.ui-button {
+  background-color: var(--color-primary);
+  color: var(--color-on-primary);
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: var(--spacing-2) var(--spacing-3);
+  font-size: 1rem;
+  cursor: pointer;
+  transition: opacity var(--transition-fast), background-color var(--transition-base);
+}
+
+.ui-button:hover {
+  opacity: 0.9;
+}
+
+.ui-button:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+.ui-button:active {
+  opacity: 0.8;
+}
+
+.ui-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

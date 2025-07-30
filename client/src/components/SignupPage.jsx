@@ -1,6 +1,7 @@
 import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../AuthContext';
+import Button from './ui/Button';
 
 export default function SignupPage() {
   const [form, setForm] = useState({ username: '', password: '' });
@@ -26,7 +27,7 @@ export default function SignupPage() {
       <h2>Signup</h2>
       <input placeholder="Username" value={form.username} onChange={e => setForm({ ...form, username: e.target.value })} />
       <input type="password" placeholder="Password" value={form.password} onChange={e => setForm({ ...form, password: e.target.value })} />
-      <button type="submit">Signup</button>
+      <Button type="submit">Signup</Button>
     </form>
   );
 }

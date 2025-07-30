@@ -1,15 +1,31 @@
 /* Global styles */
 body {
   margin: 0;
-  font-family: Arial, Helvetica, sans-serif;
-  background-color: #fafafa;
-  color: #333;
+  font-family: var(--font-base);
+  background-color: var(--color-background);
+  color: var(--color-text);
+}
+
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  padding: var(--spacing-2);
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+  text-decoration: none;
+  transition: top var(--transition-fast);
+}
+
+.skip-link:focus {
+  top: 0;
+  outline: 2px solid var(--color-focus);
 }
 
 header {
-  background-color: #6200ee;
-  color: #fff;
-  padding: 1rem;
+  background-color: var(--color-primary);
+  color: var(--color-on-primary);
+  padding: var(--spacing-3);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -18,28 +34,40 @@ header {
 
 header img {
   height: 40px;
-  margin-right: 1rem;
+  margin-right: var(--spacing-3);
 }
 
 header nav a {
-  color: #fff;
-  margin: 0 0.5rem;
+  color: var(--color-on-primary);
+  margin: 0 var(--spacing-2);
   text-decoration: none;
   font-weight: bold;
+}
+
+header nav ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+}
+
+header nav li {
+  margin: 0 var(--spacing-1);
 }
 
 main {
   max-width: 960px;
   margin: 0 auto;
-  padding: 1rem;
+  padding: var(--spacing-3);
 }
 
 .card {
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  padding: 1rem;
-  margin: 0.5rem;
-  background: #fff;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: var(--spacing-3);
+  margin: var(--spacing-2);
+  background: var(--color-surface);
   flex: 1 0 200px;
 }
 
@@ -47,7 +75,7 @@ main {
   max-width: 100%;
   height: auto;
   display: block;
-  margin-bottom: 0.5rem;
+  margin-bottom: var(--spacing-2);
 }
 
 .cards-container {
@@ -59,8 +87,8 @@ main {
 form {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-  margin-bottom: 1rem;
+  gap: var(--spacing-2);
+  margin-bottom: var(--spacing-3);
 }
 
 .auth-form,
@@ -68,7 +96,7 @@ form {
 .chapter-form,
 .comment-form {
   max-width: 500px;
-  margin: 0 auto 1rem;
+  margin: 0 auto var(--spacing-3);
 }
 
 .chapter-list {
@@ -77,21 +105,21 @@ form {
 }
 
 .chapter-list li {
-  margin-bottom: 0.5rem;
+  margin-bottom: var(--spacing-2);
 }
 
 .chapter-nav {
   display: flex;
   justify-content: space-between;
-  margin: 1rem 0;
+  margin: var(--spacing-3) 0;
 }
 
 .chapter-nav a,
 .chapter-nav span {
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
-  background: #6200ee;
-  color: #fff;
+  padding: var(--spacing-2) var(--spacing-3);
+  border-radius: var(--radius-sm);
+  background: var(--color-primary);
+  color: var(--color-on-primary);
   text-decoration: none;
 }
 
@@ -101,24 +129,25 @@ form {
 }
 
 .chapter-meta {
-  border: 1px solid #ddd;
+  border: 1px solid var(--color-border);
   background: #f9f9f9;
-  padding: 0.5rem;
-  margin-bottom: 1rem;
+  padding: var(--spacing-2);
+  margin-bottom: var(--spacing-3);
   font-size: 0.9rem;
 }
 
 input, textarea, select, button {
-  padding: 0.5rem;
+  padding: var(--spacing-2);
   font-size: 1rem;
 }
 
 button {
-  background-color: #6200ee;
-  color: #fff;
+  background-color: var(--color-primary);
+  color: var(--color-on-primary);
   border: none;
   cursor: pointer;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
+  transition: opacity var(--transition-fast);
 }
 
 button:hover {
@@ -127,7 +156,7 @@ button:hover {
 
 .markdown-editor {
   display: flex;
-  gap: 1rem;
+  gap: var(--spacing-3);
   flex-direction: column;
 }
 
@@ -137,29 +166,29 @@ button:hover {
 }
 
 .markdown-preview {
-  border: 1px solid #ddd;
-  padding: 0.5rem;
-  background: #fff;
+  border: 1px solid var(--color-border);
+  padding: var(--spacing-2);
+  background: var(--color-surface);
 }
 
 .markdown-content blockquote {
   background: #e8f0ff;
   border-left: 4px solid #1e88e5;
-  margin: 1rem 0;
-  padding: 0.5rem;
+  margin: var(--spacing-3) 0;
+  padding: var(--spacing-2);
 }
 
 .markdown-content pre {
   background: #f5f5f5;
-  padding: 0.5rem;
+  padding: var(--spacing-2);
   overflow-x: auto;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
 }
 
 @media (max-width: 600px) {
   header nav {
     width: 100%;
-    margin-top: 0.5rem;
+    margin-top: var(--spacing-2);
   }
 
   .cards-container {

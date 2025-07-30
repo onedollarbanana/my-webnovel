@@ -26,12 +26,12 @@ describe('Auth endpoints', () => {
     expect(login.body.token).toBeDefined();
   });
 
-  test('signup as reader stores role', async () => {
+  test('signup returns token', async () => {
     const res = await request(app)
       .post('/api/auth/signup')
       .send({ username: 'reader1', password: 'pass' });
     expect(res.status).toBe(200);
-    expect(res.body.role).toBe('reader');
+    expect(res.body.token).toBeDefined();
   });
 
   test('profile endpoints return and update user', async () => {
@@ -63,7 +63,7 @@ describe('Fiction, chapters and comments', () => {
   beforeAll(async () => {
     const res = await request(app)
       .post('/api/auth/signup')
-      .send({ username: 'author1', password: 'pass', role: 'author' });
+      .send({ username: 'author1', password: 'pass' });
     token = res.body.token;
   });
 
@@ -114,7 +114,7 @@ describe('Ratings', () => {
   beforeAll(async () => {
     const author = await request(app)
       .post('/api/auth/signup')
-      .send({ username: 'rateauthor', password: 'pass', role: 'author' });
+      .send({ username: 'rateauthor', password: 'pass' });
     authorToken = author.body.token;
     const fiction = await request(app)
       .post('/api/fictions')
@@ -150,7 +150,7 @@ describe('Follows', () => {
   beforeAll(async () => {
     const author = await request(app)
       .post('/api/auth/signup')
-      .send({ username: 'followAuthor', password: 'pass', role: 'author' });
+      .send({ username: 'followAuthor', password: 'pass' });
     const fic = await request(app)
       .post('/api/fictions')
       .set('Authorization', `Bearer ${author.body.token}`)

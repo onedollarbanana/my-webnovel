@@ -11,13 +11,11 @@ async function run() {
   const author1 = await User.create({
     username: 'author1',
     passwordHash: await bcrypt.hash('password1', 10),
-    role: 'author',
   });
 
   const author2 = await User.create({
     username: 'author2',
     passwordHash: await bcrypt.hash('password2', 10),
-    role: 'author',
   });
 
   const fiction1 = await Fiction.create({

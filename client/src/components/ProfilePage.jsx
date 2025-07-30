@@ -1,17 +1,16 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { Link } from 'react-router-dom';
+import { AuthContext } from '../AuthContext';
 
 export default function ProfilePage() {
+  const { user: currentUser, token } = useContext(AuthContext);
   const [user, setUser] = useState(null);
   const [form, setForm] = useState({ username: '', password: '' });
   const [follows, setFollows] = useState([]);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
     if (!token) return;
-    fetch('/api/users/me', {
-      headers: { Authorization: `Bearer ${token}` },
-    })
+    fetch('/api/users/me', { headers: { Authorization: `Bearer ${token}` } })
       .then(res => res.json())
       .then(data => {
         setUser(data);
@@ -20,11 +19,10 @@ export default function ProfilePage() {
     fetch('/api/follows', { headers: { Authorization: `Bearer ${token}` } })
       .then(res => res.json())
       .then(setFollows);
-  }, []);
+  }, [token]);
 
   const handleSubmit = async e => {
     e.preventDefault();
-    const token = localStorage.getItem('token');
     await fetch('/api/users/me', {
       method: 'PUT',
       headers: {
@@ -36,13 +34,13 @@ export default function ProfilePage() {
     alert('Profile updated');
   };
 
+  if (!currentUser) return <div>Please login</div>;
   if (!user) return <div>Loading...</div>;
 
   return (
     <div>
       <h2>Profile</h2>
       <p>Username: {user.username}</p>
-      <p>Role: {user.role}</p>
       {follows.length > 0 && (
         <div>
           <h3>Followed Fictions</h3>

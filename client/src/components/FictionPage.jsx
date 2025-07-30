@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { useParams, Routes, Route, Link } from 'react-router-dom';
+import { AuthContext } from '../AuthContext';
 import ChapterView from './ChapterView';
 
 export default function FictionPage() {
   const { id } = useParams();
+  const { user, token } = useContext(AuthContext);
   const [fiction, setFiction] = useState(null);
   const [chapters, setChapters] = useState([]);
   const [form, setForm] = useState({ title: '', content: '' });
@@ -12,16 +14,7 @@ export default function FictionPage() {
   const [myRating, setMyRating] = useState('1');
   const [followed, setFollowed] = useState(false);
 
-  const userId = (() => {
-    const token = localStorage.getItem('token');
-    if (!token) return null;
-    try {
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      return payload.id;
-    } catch {
-      return null;
-    }
-  })();
+  const userId = user ? user.id : null;
 
   const loadChapters = () => {
     fetch(`/api/chapters/${id}`)
@@ -37,7 +30,6 @@ export default function FictionPage() {
       .then(res => res.json())
       .then(r => setRating(r.average));
     loadChapters();
-    const token = localStorage.getItem('token');
     if (token) {
       fetch('/api/follows', {
         headers: { Authorization: `Bearer ${token}` },
@@ -45,22 +37,19 @@ export default function FictionPage() {
         .then(res => res.json())
         .then(data => setFollowed(data.some(f => f.id === Number(id))));
     }
-  }, [id]);
+  }, [id, token]);
 
   const handleSubmit = async e => {
     e.preventDefault();
-    const token = localStorage.getItem('token');
     const opts = {
-      method: editing ? 'PUT' : 'POST',
+      method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify(form),
     };
-    const url = editing
-      ? `/api/chapters/${id}/${editing.id}`
-      : `/api/chapters/${id}`;
+    const url = `/api/chapters/${id}/${editing.id}`;
     await fetch(url, opts);
     setForm({ title: '', content: '' });
     setEditing(null);
@@ -69,7 +58,6 @@ export default function FictionPage() {
 
   const submitRating = async e => {
     e.preventDefault();
-    const token = localStorage.getItem('token');
     await fetch(`/api/ratings/${id}`, {
       method: 'POST',
       headers: {
@@ -84,7 +72,6 @@ export default function FictionPage() {
   };
 
   const toggleFollow = async () => {
-    const token = localStorage.getItem('token');
     if (!token) return;
     const method = followed ? 'DELETE' : 'POST';
     await fetch(`/api/follows/${id}`, {
@@ -134,8 +121,15 @@ export default function FictionPage() {
       </ul>
 
       {userId === fiction.authorId && (
+        <div style={{ marginBottom: '1rem' }}>
+          <Link to="new-chapter">Add Chapter</Link>{' '}
+          <Link to="edit">Edit Fiction</Link>
+        </div>
+      )}
+
+      {userId === fiction.authorId && editing && (
         <form onSubmit={handleSubmit} className="chapter-form">
-          <h4>{editing ? 'Edit Chapter' : 'New Chapter'}</h4>
+          <h4>Edit Chapter</h4>
           <input
             placeholder="Title"
             value={form.title}
@@ -146,7 +140,7 @@ export default function FictionPage() {
             value={form.content}
             onChange={e => setForm({ ...form, content: e.target.value })}
           />
-          <button type="submit">{editing ? 'Update' : 'Create'}</button>
+          <button type="submit">Update</button>
           {editing && (
             <button
               type="button"

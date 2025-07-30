@@ -1,6 +1,7 @@
 import React from 'react';
 import { render, fireEvent, screen, waitFor } from '@testing-library/react';
 import FictionPage from '../components/FictionPage';
+import { AuthContext } from '../AuthContext';
 
 jest.mock('react-router-dom', () => ({
   useParams: () => ({ id: '1' }),
@@ -24,7 +25,12 @@ beforeEach(() => {
 });
 
 test('follow button calls API', async () => {
-  render(<FictionPage />);
+  const wrapper = ({ children }) => (
+    <AuthContext.Provider value={{ token: 't', user: { id: 1 } }}>
+      {children}
+    </AuthContext.Provider>
+  );
+  render(<FictionPage />, { wrapper });
 
   await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(4));
 

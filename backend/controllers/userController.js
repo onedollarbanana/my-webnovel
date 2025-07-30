@@ -1,7 +1,7 @@
 const bcrypt = require('bcrypt');
 
 exports.getMe = async (req, res) => {
-  res.json({ id: req.user.id, username: req.user.username, role: req.user.role });
+  res.json({ id: req.user.id, username: req.user.username });
 };
 
 exports.updateMe = async (req, res) => {
@@ -13,7 +13,7 @@ exports.updateMe = async (req, res) => {
       req.user.passwordHash = hash;
     }
     await req.user.save();
-    res.json({ id: req.user.id, username: req.user.username, role: req.user.role });
+    res.json({ id: req.user.id, username: req.user.username });
   } catch (err) {
     res.status(400).json({ error: err.message });
   }

@@ -1,42 +1,31 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Link } from 'react-router-dom';
+import { AuthContext } from '../AuthContext';
 
 export default function AuthorDashboard() {
   const [form, setForm] = useState({ title: '', description: '', genre: '' });
   const [cover, setCover] = useState(null);
   const [fictions, setFictions] = useState([]);
   const [follows, setFollows] = useState([]);
-
-  const userId = (() => {
-    const token = localStorage.getItem('token');
-    if (!token) return null;
-    try {
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      return payload.id;
-    } catch {
-      return null;
-    }
-  })();
+  const { user, token } = useContext(AuthContext);
 
   useEffect(() => {
     fetch('/api/fictions')
       .then(res => res.json())
       .then(data => {
-        if (userId) {
-          setFictions(data.filter(f => f.authorId === userId));
+        if (user) {
+          setFictions(data.filter(f => f.authorId === user.id));
         }
       });
-    const token = localStorage.getItem('token');
     if (token) {
       fetch('/api/follows', { headers: { Authorization: `Bearer ${token}` } })
         .then(res => res.json())
         .then(setFollows);
     }
-  }, [userId]);
+  }, [user, token]);
 
   const handleSubmit = async e => {
     e.preventDefault();
-    const token = localStorage.getItem('token');
     const data = new FormData();
     data.append('title', form.title);
     data.append('description', form.description);
@@ -54,28 +43,30 @@ export default function AuthorDashboard() {
 
   return (
     <div>
-      <form onSubmit={handleSubmit} className="dashboard-form">
-        <h2>Create Fiction</h2>
-        <input
-          placeholder="Title"
-          value={form.title}
-          onChange={e => setForm({ ...form, title: e.target.value })}
-        />
-        <textarea
-          placeholder="Synopsis"
-          value={form.description}
-          onChange={e => setForm({ ...form, description: e.target.value })}
-        />
-        <input
-          placeholder="Genres (comma separated)"
-          value={form.genre}
-          onChange={e => setForm({ ...form, genre: e.target.value })}
-        />
-        <input type="file" onChange={e => setCover(e.target.files[0])} />
-        <button type="submit">Create</button>
-      </form>
+      {user && (
+        <form onSubmit={handleSubmit} className="dashboard-form">
+          <h2>Create Fiction</h2>
+          <input
+            placeholder="Title"
+            value={form.title}
+            onChange={e => setForm({ ...form, title: e.target.value })}
+          />
+          <textarea
+            placeholder="Synopsis"
+            value={form.description}
+            onChange={e => setForm({ ...form, description: e.target.value })}
+          />
+          <input
+            placeholder="Genres (comma separated)"
+            value={form.genre}
+            onChange={e => setForm({ ...form, genre: e.target.value })}
+          />
+          <input type="file" onChange={e => setCover(e.target.files[0])} />
+          <button type="submit">Create</button>
+        </form>
+      )}
 
-      {fictions.length > 0 && (
+      {user && fictions.length > 0 && (
         <div>
           <h3>Your Fictions</h3>
           <ul>
@@ -87,7 +78,7 @@ export default function AuthorDashboard() {
           </ul>
         </div>
       )}
-      {follows.length > 0 && (
+      {token && follows.length > 0 && (
         <div>
           <h3>Followed Fictions</h3>
           <ul>

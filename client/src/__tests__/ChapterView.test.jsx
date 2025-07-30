@@ -14,8 +14,9 @@ global.fetch = fetchMock;
 beforeEach(() => {
   fetchMock.mockReset();
   fetchMock
-    .mockResolvedValueOnce({ json: () => Promise.resolve({ id: 1, title: 'ch', content: 'txt' }) })
-    .mockResolvedValueOnce({ json: () => Promise.resolve([]) });
+    .mockResolvedValueOnce({ json: () => Promise.resolve({ id: 1, title: 'ch', content: 'txt', createdAt: '2023-01-01', updatedAt: '2023-01-02' }) })
+    .mockResolvedValueOnce({ json: () => Promise.resolve([]) })
+    .mockResolvedValueOnce({ json: () => Promise.resolve([{ id: 1 }]) });
 });
 
 test('loads chapter and posts comment', async () => {
@@ -24,7 +25,7 @@ test('loads chapter and posts comment', async () => {
   );
   render(<ChapterView />, { wrapper });
 
-  await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(2));
+  await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(3));
 
   fetchMock
     .mockResolvedValueOnce({ json: () => Promise.resolve({}) })
@@ -34,7 +35,7 @@ test('loads chapter and posts comment', async () => {
   fireEvent.change(input, { target: { value: 'hi' } });
   fireEvent.submit(screen.getByText('Comment').closest('form'));
 
-  await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(4));
-  expect(fetchMock.mock.calls[2][0]).toContain('/api/comments/1');
-  expect(fetchMock.mock.calls[2][1].method).toBe('POST');
+  await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(5));
+  expect(fetchMock.mock.calls[3][0]).toContain('/api/comments/1');
+  expect(fetchMock.mock.calls[3][1].method).toBe('POST');
 });

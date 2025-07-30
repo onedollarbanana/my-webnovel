@@ -142,3 +142,50 @@ describe('Ratings', () => {
     expect(avg.body.average).toBeCloseTo(5);
   });
 });
+
+describe('Follows', () => {
+  let userToken;
+  let fictionId;
+
+  beforeAll(async () => {
+    const author = await request(app)
+      .post('/api/auth/signup')
+      .send({ username: 'followAuthor', password: 'pass', role: 'author' });
+    const fic = await request(app)
+      .post('/api/fictions')
+      .set('Authorization', `Bearer ${author.body.token}`)
+      .field('title', 'Follow Me')
+      .field('description', 'd')
+      .field('genre', 'g');
+    fictionId = fic.body.id;
+
+    const user = await request(app)
+      .post('/api/auth/signup')
+      .send({ username: 'follower', password: 'pass' });
+    userToken = user.body.token;
+  });
+
+  test('follow and unfollow fiction', async () => {
+    const followRes = await request(app)
+      .post(`/api/follows/${fictionId}`)
+      .set('Authorization', `Bearer ${userToken}`);
+    expect(followRes.status).toBe(200);
+
+    const list = await request(app)
+      .get('/api/follows')
+      .set('Authorization', `Bearer ${userToken}`);
+    expect(list.status).toBe(200);
+    expect(list.body.length).toBe(1);
+    expect(list.body[0].id).toBe(fictionId);
+
+    const unf = await request(app)
+      .delete(`/api/follows/${fictionId}`)
+      .set('Authorization', `Bearer ${userToken}`);
+    expect(unf.status).toBe(200);
+
+    const list2 = await request(app)
+      .get('/api/follows')
+      .set('Authorization', `Bearer ${userToken}`);
+    expect(list2.body.length).toBe(0);
+  });
+});

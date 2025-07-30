@@ -10,6 +10,7 @@ export default function FictionPage() {
   const [editing, setEditing] = useState(null);
   const [rating, setRating] = useState(null);
   const [myRating, setMyRating] = useState('1');
+  const [followed, setFollowed] = useState(false);
 
   const userId = (() => {
     const token = localStorage.getItem('token');
@@ -36,6 +37,14 @@ export default function FictionPage() {
       .then(res => res.json())
       .then(r => setRating(r.average));
     loadChapters();
+    const token = localStorage.getItem('token');
+    if (token) {
+      fetch('/api/follows', {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+        .then(res => res.json())
+        .then(data => setFollowed(data.some(f => f.id === Number(id))));
+    }
   }, [id]);
 
   const handleSubmit = async e => {
@@ -74,6 +83,17 @@ export default function FictionPage() {
     setRating(data.average);
   };
 
+  const toggleFollow = async () => {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+    const method = followed ? 'DELETE' : 'POST';
+    await fetch(`/api/follows/${id}`, {
+      method,
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    setFollowed(!followed);
+  };
+
   const startEdit = chapter => {
     setEditing(chapter);
     setForm({ title: chapter.title, content: chapter.content || '' });
@@ -86,6 +106,9 @@ export default function FictionPage() {
       <h2>{fiction.title}</h2>
       <p>{fiction.description}</p>
       <p>Average Rating: {rating ? rating.toFixed(1) : 'N/A'}</p>
+      {userId && (
+        <button onClick={toggleFollow}>{followed ? 'Unfollow' : 'Follow'}</button>
+      )}
       {userId && (
         <form onSubmit={submitRating} className="rating-form">
           <select value={myRating} onChange={e => setMyRating(e.target.value)}>

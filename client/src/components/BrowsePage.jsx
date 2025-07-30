@@ -47,7 +47,7 @@ export default function BrowsePage() {
           <option value="popular">Popularity</option>
         </select>
       </div>
-      <div>
+      <div className="cards-container">
         {fictions.map(f => (
           <div key={f.id} className="card">
             {f.coverImage && (

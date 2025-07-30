@@ -65,7 +65,7 @@ export default function FictionPage() {
       <h2>{fiction.title}</h2>
       <p>{fiction.description}</p>
       <h3>Chapters</h3>
-      <ul>
+      <ul className="chapter-list">
         {chapters.map(ch => (
           <li key={ch.id}>
             <Link to={`chapter/${ch.id}`}>{ch.title}</Link>
@@ -77,7 +77,7 @@ export default function FictionPage() {
       </ul>
 
       {userId === fiction.authorId && (
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} className="chapter-form">
           <h4>{editing ? 'Edit Chapter' : 'New Chapter'}</h4>
           <input
             placeholder="Title"

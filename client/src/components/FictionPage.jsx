@@ -8,6 +8,9 @@ export default function FictionPage() {
   const [chapters, setChapters] = useState([]);
   const [form, setForm] = useState({ title: '', content: '' });
   const [editing, setEditing] = useState(null);
+  const [rating, setRating] = useState(null);
+  const [myRating, setMyRating] = useState('1');
+  const [followed, setFollowed] = useState(false);
 
   const userId = (() => {
     const token = localStorage.getItem('token');
@@ -30,7 +33,18 @@ export default function FictionPage() {
     fetch(`/api/fictions/${id}`)
       .then(res => res.json())
       .then(setFiction);
+    fetch(`/api/ratings/${id}`)
+      .then(res => res.json())
+      .then(r => setRating(r.average));
     loadChapters();
+    const token = localStorage.getItem('token');
+    if (token) {
+      fetch('/api/follows', {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+        .then(res => res.json())
+        .then(data => setFollowed(data.some(f => f.id === Number(id))));
+    }
   }, [id]);
 
   const handleSubmit = async e => {
@@ -53,6 +67,33 @@ export default function FictionPage() {
     loadChapters();
   };
 
+  const submitRating = async e => {
+    e.preventDefault();
+    const token = localStorage.getItem('token');
+    await fetch(`/api/ratings/${id}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ value: Number(myRating) }),
+    });
+    const res = await fetch(`/api/ratings/${id}`);
+    const data = await res.json();
+    setRating(data.average);
+  };
+
+  const toggleFollow = async () => {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+    const method = followed ? 'DELETE' : 'POST';
+    await fetch(`/api/follows/${id}`, {
+      method,
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    setFollowed(!followed);
+  };
+
   const startEdit = chapter => {
     setEditing(chapter);
     setForm({ title: chapter.title, content: chapter.content || '' });
@@ -64,6 +105,22 @@ export default function FictionPage() {
     <div>
       <h2>{fiction.title}</h2>
       <p>{fiction.description}</p>
+      <p>Average Rating: {rating ? rating.toFixed(1) : 'N/A'}</p>
+      {userId && (
+        <button onClick={toggleFollow}>{followed ? 'Unfollow' : 'Follow'}</button>
+      )}
+      {userId && (
+        <form onSubmit={submitRating} className="rating-form">
+          <select value={myRating} onChange={e => setMyRating(e.target.value)}>
+            {[1, 2, 3, 4, 5].map(n => (
+              <option key={n} value={n}>
+                {n}
+              </option>
+            ))}
+          </select>
+          <button type="submit">Rate</button>
+        </form>
+      )}
       <h3>Chapters</h3>
       <ul className="chapter-list">
         {chapters.map(ch => (

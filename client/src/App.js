@@ -5,6 +5,7 @@ import LoginPage from './components/LoginPage';
 import BrowsePage from './components/BrowsePage';
 import FictionPage from './components/FictionPage';
 import AuthorDashboard from './components/AuthorDashboard';
+import ProfilePage from './components/ProfilePage';
 
 const App = () => (
   <Router>
@@ -18,6 +19,7 @@ const App = () => (
         <Link to="/signup">Signup</Link>
         <Link to="/login">Login</Link>
         <Link to="/dashboard">Dashboard</Link>
+        <Link to="/profile">Profile</Link>
       </nav>
     </header>
     <main>
@@ -27,6 +29,7 @@ const App = () => (
         <Route path="/login" element={<LoginPage />} />
         <Route path="/fiction/:id/*" element={<FictionPage />} />
         <Route path="/dashboard" element={<AuthorDashboard />} />
+        <Route path="/profile" element={<ProfilePage />} />
       </Routes>
     </main>
   </Router>

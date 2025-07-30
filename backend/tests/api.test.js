@@ -25,6 +25,34 @@ describe('Auth endpoints', () => {
     expect(login.status).toBe(200);
     expect(login.body.token).toBeDefined();
   });
+
+  test('signup as reader stores role', async () => {
+    const res = await request(app)
+      .post('/api/auth/signup')
+      .send({ username: 'reader1', password: 'pass' });
+    expect(res.status).toBe(200);
+    expect(res.body.role).toBe('reader');
+  });
+
+  test('profile endpoints return and update user', async () => {
+    const res = await request(app)
+      .post('/api/auth/signup')
+      .send({ username: 'profile', password: 'pass' });
+    const token = res.body.token;
+
+    const me = await request(app)
+      .get('/api/users/me')
+      .set('Authorization', `Bearer ${token}`);
+    expect(me.status).toBe(200);
+    expect(me.body.username).toBe('profile');
+
+    const upd = await request(app)
+      .put('/api/users/me')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ username: 'newprofile' });
+    expect(upd.status).toBe(200);
+    expect(upd.body.username).toBe('newprofile');
+  });
 });
 
 describe('Fiction, chapters and comments', () => {
@@ -35,7 +63,7 @@ describe('Fiction, chapters and comments', () => {
   beforeAll(async () => {
     const res = await request(app)
       .post('/api/auth/signup')
-      .send({ username: 'author1', password: 'pass' });
+      .send({ username: 'author1', password: 'pass', role: 'author' });
     token = res.body.token;
   });
 
@@ -75,5 +103,89 @@ describe('Fiction, chapters and comments', () => {
     const list = await request(app).get(`/api/comments/${chapterId}`);
     expect(list.body.length).toBe(1);
     expect(list.body[0].content).toBe('Nice work');
+  });
+});
+
+describe('Ratings', () => {
+  let authorToken;
+  let userToken;
+  let fictionId;
+
+  beforeAll(async () => {
+    const author = await request(app)
+      .post('/api/auth/signup')
+      .send({ username: 'rateauthor', password: 'pass', role: 'author' });
+    authorToken = author.body.token;
+    const fiction = await request(app)
+      .post('/api/fictions')
+      .set('Authorization', `Bearer ${authorToken}`)
+      .field('title', 'Rate Me')
+      .field('description', 'd')
+      .field('genre', 'g');
+    fictionId = fiction.body.id;
+
+    const user = await request(app)
+      .post('/api/auth/signup')
+      .send({ username: 'rater', password: 'pass' });
+    userToken = user.body.token;
+  });
+
+  test('submit and get rating average', async () => {
+    const res = await request(app)
+      .post(`/api/ratings/${fictionId}`)
+      .set('Authorization', `Bearer ${userToken}`)
+      .send({ value: 5 });
+    expect(res.status).toBe(200);
+
+    const avg = await request(app).get(`/api/ratings/${fictionId}`);
+    expect(avg.status).toBe(200);
+    expect(avg.body.average).toBeCloseTo(5);
+  });
+});
+
+describe('Follows', () => {
+  let userToken;
+  let fictionId;
+
+  beforeAll(async () => {
+    const author = await request(app)
+      .post('/api/auth/signup')
+      .send({ username: 'followAuthor', password: 'pass', role: 'author' });
+    const fic = await request(app)
+      .post('/api/fictions')
+      .set('Authorization', `Bearer ${author.body.token}`)
+      .field('title', 'Follow Me')
+      .field('description', 'd')
+      .field('genre', 'g');
+    fictionId = fic.body.id;
+
+    const user = await request(app)
+      .post('/api/auth/signup')
+      .send({ username: 'follower', password: 'pass' });
+    userToken = user.body.token;
+  });
+
+  test('follow and unfollow fiction', async () => {
+    const followRes = await request(app)
+      .post(`/api/follows/${fictionId}`)
+      .set('Authorization', `Bearer ${userToken}`);
+    expect(followRes.status).toBe(200);
+
+    const list = await request(app)
+      .get('/api/follows')
+      .set('Authorization', `Bearer ${userToken}`);
+    expect(list.status).toBe(200);
+    expect(list.body.length).toBe(1);
+    expect(list.body[0].id).toBe(fictionId);
+
+    const unf = await request(app)
+      .delete(`/api/follows/${fictionId}`)
+      .set('Authorization', `Bearer ${userToken}`);
+    expect(unf.status).toBe(200);
+
+    const list2 = await request(app)
+      .get('/api/follows')
+      .set('Authorization', `Bearer ${userToken}`);
+    expect(list2.body.length).toBe(0);
   });
 });

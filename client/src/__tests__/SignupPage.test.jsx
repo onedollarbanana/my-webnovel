@@ -12,10 +12,12 @@ test('submits signup form', async () => {
   render(<SignupPage />);
   fireEvent.change(screen.getByPlaceholderText(/Username/i), { target: { value: 'u' } });
   fireEvent.change(screen.getByPlaceholderText(/Password/i), { target: { value: 'p' } });
+  fireEvent.change(screen.getByRole('combobox'), { target: { value: 'reader' } });
   fireEvent.submit(screen.getByRole('button', { name: /signup/i }).closest('form'));
 
   await waitFor(() => expect(fetch).toHaveBeenCalled());
   const call = fetch.mock.calls[0];
   expect(call[0]).toBe('/api/auth/signup');
   expect(call[1].method).toBe('POST');
+  expect(JSON.parse(call[1].body).role).toBe('reader');
 });

@@ -17,6 +17,7 @@ app.use('/api/fictions', require('./routes/fictionRoutes'));
 app.use('/api/chapters', require('./routes/chapterRoutes'));
 app.use('/api/comments', require('./routes/commentRoutes'));
 app.use('/api/ratings', require('./routes/ratingRoutes'));
+app.use('/api/follows', require('./routes/followRoutes'));
 app.use('/api/users', require('./routes/userRoutes'));
 
 const PORT = process.env.PORT || 5000;

@@ -5,6 +5,7 @@ export default function AuthorDashboard() {
   const [form, setForm] = useState({ title: '', description: '', genre: '' });
   const [cover, setCover] = useState(null);
   const [fictions, setFictions] = useState([]);
+  const [follows, setFollows] = useState([]);
 
   const userId = (() => {
     const token = localStorage.getItem('token');
@@ -25,6 +26,12 @@ export default function AuthorDashboard() {
           setFictions(data.filter(f => f.authorId === userId));
         }
       });
+    const token = localStorage.getItem('token');
+    if (token) {
+      fetch('/api/follows', { headers: { Authorization: `Bearer ${token}` } })
+        .then(res => res.json())
+        .then(setFollows);
+    }
   }, [userId]);
 
   const handleSubmit = async e => {
@@ -73,6 +80,18 @@ export default function AuthorDashboard() {
           <h3>Your Fictions</h3>
           <ul>
             {fictions.map(f => (
+              <li key={f.id}>
+                <Link to={`/fiction/${f.id}`}>{f.title}</Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+      {follows.length > 0 && (
+        <div>
+          <h3>Followed Fictions</h3>
+          <ul>
+            {follows.map(f => (
               <li key={f.id}>
                 <Link to={`/fiction/${f.id}`}>{f.title}</Link>
               </li>

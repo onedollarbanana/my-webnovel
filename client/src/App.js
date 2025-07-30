@@ -17,12 +17,12 @@ import AuthorDashboard from './components/AuthorDashboard';
 import ProfilePage from './components/ProfilePage';
 import { AuthContext } from './AuthContext';
 
-const App = () => {
+function AppContent() {
   const { user, logout } = useContext(AuthContext);
   const navigate = useNavigate();
 
   return (
-    <Router>
+    <>
       <header>
         <Link to="/" style={{ display: 'flex', alignItems: 'center' }}>
           <img src="/logo.png" alt="My-Webnovel logo" />
@@ -65,8 +65,14 @@ const App = () => {
           <Route path="/profile" element={<ProfilePage />} />
         </Routes>
       </main>
-    </Router>
+    </>
   );
-};
+}
+
+const App = () => (
+  <Router>
+    <AppContent />
+  </Router>
+);
 
 export default App;

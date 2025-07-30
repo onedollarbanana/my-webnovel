@@ -80,6 +80,34 @@ form {
   margin-bottom: 0.5rem;
 }
 
+.chapter-nav {
+  display: flex;
+  justify-content: space-between;
+  margin: 1rem 0;
+}
+
+.chapter-nav a,
+.chapter-nav span {
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  background: #6200ee;
+  color: #fff;
+  text-decoration: none;
+}
+
+.chapter-nav .disabled {
+  background: #ccc;
+  color: #666;
+}
+
+.chapter-meta {
+  border: 1px solid #ddd;
+  background: #f9f9f9;
+  padding: 0.5rem;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+}
+
 input, textarea, select, button {
   padding: 0.5rem;
   font-size: 1rem;

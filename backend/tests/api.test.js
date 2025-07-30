@@ -33,6 +33,26 @@ describe('Auth endpoints', () => {
     expect(res.status).toBe(200);
     expect(res.body.role).toBe('reader');
   });
+
+  test('profile endpoints return and update user', async () => {
+    const res = await request(app)
+      .post('/api/auth/signup')
+      .send({ username: 'profile', password: 'pass' });
+    const token = res.body.token;
+
+    const me = await request(app)
+      .get('/api/users/me')
+      .set('Authorization', `Bearer ${token}`);
+    expect(me.status).toBe(200);
+    expect(me.body.username).toBe('profile');
+
+    const upd = await request(app)
+      .put('/api/users/me')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ username: 'newprofile' });
+    expect(upd.status).toBe(200);
+    expect(upd.body.username).toBe('newprofile');
+  });
 });
 
 describe('Fiction, chapters and comments', () => {
